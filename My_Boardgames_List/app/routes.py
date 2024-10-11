@@ -1,6 +1,6 @@
 import requests
-from flask import Blueprint, render_template, request, jsonify
-from app.models import Usuario, Jogos
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
+from app.models import Usuario, Jogos, Rank
 from app import db
 
 
@@ -8,9 +8,9 @@ from app import db
 # criação de um blueprint para rotas principais
 main_routes = Blueprint('main_routes', __name__)
 
-@main_routes.route('/', methods=['GET', 'POST'])
+@main_routes.route('/', methods=['POST', 'GET'])
 def index():
-    # criando as variaveis e recebendo os valores do POST
+    # criando as variaveis e recebendo os valores do GET
     query = Jogos.query
     jogadores = request.form.get('jogadores', 0)
     categoria = request.form.get('categoria', None)
@@ -76,16 +76,45 @@ def index():
                            categList=categList,
                            donoList=donoList
                            )
-'''
-@main_routes.route('/contato', methods=['GET', 'POST'])
-def contato():
-    if request.method == 'POST':
-        nome = request.form['nome']
-        email = request.form['email']
-        novo_usuario = Usuario(nome=nome, email=email)
-        db.session.add(novo_usuario)
-        db.session.commit()
-        return f"Obrigado pelo contato, {nome}!"
-    return render_template('contato.html')
 
-'''
+    # Receber Valor da Nota do Usurario
+@main_routes.route('/obg', methods=['GET', 'POST'])
+def obg():
+    if request.method == 'POST':
+        id_user = request.form.get('id_user')
+        id_game = request.form.get('id_game')
+        nota = request.form.get('nota')
+        
+
+        nota_existente = Rank.query.filter_by(id_user=id_user, id_game=id_game).first()
+        if nota_existente:
+            nota_existente.Rank = nota
+            db.session.commit()
+        else:
+            nova_votacao = Rank(id_game=id_game, nota=nota, id_user=id_user)
+            db.session.add(nova_votacao)
+            db.session.commit()
+
+        
+
+@main_routes.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        login = request.form.get('login')
+        senha = request.form.get('senha')
+
+        usuario_existente = Usuario.query.filter_by(login=login).first()
+        if usuario_existente and Usuario.check_password(senha):
+            session['user_id'] = usuario_existente.id
+            flash('Login efetuado')
+            return redirect(url_for('/'))
+        else:
+            #flash('invalido')
+            print(senha)
+            new_user = Usuario(login=login)
+            new_user.set_password(senha)  # Define a senha hash
+            db.session.add(new_user)  # Adiciona o novo usuário à sessão
+            db.session.commit()  # Salva no banco de dados
+
+    return render_template('login.html')
+
