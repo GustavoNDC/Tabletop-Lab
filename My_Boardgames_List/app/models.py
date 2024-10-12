@@ -30,6 +30,7 @@ class Jogos(db.Model):
     tempoDeJogo = db.Column(db.Integer)
     dono = db.Column(db.String(80))
     descricao = db.Column(db.String(120))
+    img = db.Column(db.String(999))
     def __repr__(self):
         return f'<Jogos {self.nome}>'
 

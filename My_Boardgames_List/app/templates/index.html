@@ -13,7 +13,7 @@
     <div class="container">
       <!-- Header -->
       <header>
-        <h1>Minha Lista de Jogos</h1>
+        <h1>Tabletop Lab</h1>
       </header>
 
       <!-- Conteúdo principal com filtro e tabela lado a lado -->
@@ -43,7 +43,9 @@
               <select name="categoria">
                 <option value="null">Todos</option>
                 {% for categ in categList %}
-                <option value="{{ categ }}">{{ categ }}</option>
+                <option value="{{ categ }}">
+                  {{ categ.replace('_', ' ') }}
+                </option>
                 {% endfor %}
               </select>
             </div>
@@ -59,25 +61,37 @@
             <thead>
               <tr>
                 <th>Rank</th>
-                <th>Rank In House</th>
+                <th>Rank InHouse</th>
+                <th></th>
                 <th>Nome</th>
-                <th>Número de Jogadores</th>
+                <th>N. Jogadores</th>
                 <th>Categoria</th>
                 <th>Dificuldade</th>
-                <th>Tempo de Jogo (min)</th>
+                <th>Duração</th>
                 <th>Dono</th>
               </tr>
             </thead>
             <tbody>
               {% for jogo in jogos %}
               <tr>
-                <td>{{ jogo.rank }}</td>
-                <td>{{ jogo.rankInHouse }}</td>
-                <td>{{ jogo.nome }}</td>
-                <td>{{ jogo.nmJogadorMin }} - {{ jogo.nmJogadorMax }}</td>
-                <td>{{ jogo.categoria }}</td>
-                <td>{{ jogo.dificuldade }}</td>
-                <td>{{ jogo.tempoDeJogo }}</td>
+                <td class="small-column">{{ jogo.rank }}</td>
+                <td class="small-column">{{ jogo.rankInHouse }}</td>
+
+                <td class="game_img">
+                  <div class="image-container">
+                    <img src="{{jogo.img}}" class="game-img" />
+                  </div>
+                </td>
+
+                <td class="big-column">{{ jogo.nome }}</td>
+                <td class="small-column">
+                  {{ jogo.nmJogadorMin }} - {{ jogo.nmJogadorMax }}
+                </td>
+                <td class="mid-column">
+                  {{ jogo.categoria.replace('_', ' ') }}
+                </td>
+                <td class="small-column">{{ jogo.dificuldade }}</td>
+                <td class="small-column">{{ jogo.tempoDeJogo }} Min</td>
                 <td>{{ jogo.dono }}</td>
               </tr>
               {% endfor %}
