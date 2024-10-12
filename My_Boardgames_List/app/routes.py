@@ -1,8 +1,10 @@
-import requests
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
 from app.models import Usuario, Jogos, Rank
 from app import db
 
+
+def is_logged_in():
+    return 'user_id' in session
 
 
 # criação de um blueprint para rotas principais
@@ -102,19 +104,21 @@ def login():
     if request.method == 'POST':
         login = request.form.get('login')
         senha = request.form.get('senha')
-
+        
         usuario_existente = Usuario.query.filter_by(login=login).first()
-        if usuario_existente and Usuario.check_password(senha):
+
+        if usuario_existente and usuario_existente.check_password(senha):
             session['user_id'] = usuario_existente.id
             flash('Login efetuado')
-            return redirect(url_for('/'))
+            return redirect(url_for('main_routes.index'))
+            
         else:
-            #flash('invalido')
-            print(senha)
-            new_user = Usuario(login=login)
-            new_user.set_password(senha)  # Define a senha hash
-            db.session.add(new_user)  # Adiciona o novo usuário à sessão
-            db.session.commit()  # Salva no banco de dados
+            flash('invalido')
+            
+            #new_user = Usuario(login=login)
+            #new_user.set_password(senha)  # Define a senha hash
+            #db.session.add(new_user)  # Adiciona o novo usuário à sessão
+            #db.session.commit()  # Salva no banco de dados
 
     return render_template('login.html')
 

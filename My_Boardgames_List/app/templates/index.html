@@ -3,60 +3,78 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
     <title>Meus Jogos</title>
   </head>
   <body>
-      <!-- Filtro -->
-        <form method="POST" action="/">
-          <!-- Ler o numero de jogadores -->
-          <label for="jogadores">Numero de Jogadores</label>
-          <input type="text" id="jogadores" name="jogadores"/>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <h1>Minha Lista de Jogos</h1>
+      </header>
 
-          <!-- For para ler os donos dos jogos -->
-          <label for="dono">Dono</label>
-          <select name = "dono">
-            <option value='null'>All</option>
-            {% for categ in donoList %}
-            <option value={{categ}}>{{categ.replace('_', ' ')}}</option>
-            {% endfor %}
-          </select>
+      <!-- Conteúdo principal com filtro e tabela lado a lado -->
+      <div class="main-content">
+        <!-- Filtro de Jogos -->
+        <section class="filter-section">
+          <form method="POST" action="/">
+            <div class="form-group">
+              <label for="jogadores">Número de Jogadores</label>
+              <input type="text" id="jogadores" name="jogadores" />
+            </div>
 
-          <!-- For para ler as categorias disponiveis -->
-          <label for="categoria">Categoria</label>
-          <select name = "categoria">
-            <option value='null'>All</option>
-            {% for categ in categList %}
-            <option value={{categ}}>{{categ}}</option>
-            {% endfor %}
-          </select>
-          <button type="submit">Enviar</button>
-        </form>
+            <div class="form-group">
+              <label for="dono">Dono</label>
+              <select name="dono">
+                <option value="null">Todos</option>
+                {% for categ in donoList %}
+                <option value="{{ categ }}">
+                  {{ categ.replace('_', ' ') }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
 
-        <!-- Tabela -->
-        <div class="container mt-5">
-          <h1 class="mb-4">Tabela de Jogos</h1>
-          <table class="table table-bordered">
+            <div class="form-group">
+              <label for="categoria">Categoria</label>
+              <select name="categoria">
+                <option value="null">Todos</option>
+                {% for categ in categList %}
+                <option value="{{ categ }}">{{ categ }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <button type="submit" class="btn-submit">Enviar</button>
+          </form>
+        </section>
+
+        <!-- Tabela de Jogos -->
+        <section class="table-section">
+          <h2>Tabela de Jogos</h2>
+          <table>
             <thead>
               <tr>
                 <th>Rank</th>
                 <th>Rank In House</th>
                 <th>Nome</th>
-                <th>Numero de Jogadores</th>
+                <th>Número de Jogadores</th>
                 <th>Categoria</th>
                 <th>Dificuldade</th>
                 <th>Tempo de Jogo (min)</th>
                 <th>Dono</th>
               </tr>
             </thead>
-            <!-- for para olhar os jogos -->
             <tbody>
               {% for jogo in jogos %}
               <tr>
                 <td>{{ jogo.rank }}</td>
-                <td>{{jogo.rankInHouse}}</td>
+                <td>{{ jogo.rankInHouse }}</td>
                 <td>{{ jogo.nome }}</td>
-                <td>{{ jogo.nmJogadorMin }} e {{ jogo.nmJogadorMax }}</td>
+                <td>{{ jogo.nmJogadorMin }} - {{ jogo.nmJogadorMax }}</td>
                 <td>{{ jogo.categoria }}</td>
                 <td>{{ jogo.dificuldade }}</td>
                 <td>{{ jogo.tempoDeJogo }}</td>
@@ -65,7 +83,13 @@
               {% endfor %}
             </tbody>
           </table>
-        </div>
-      </main>
+        </section>
+      </div>
+
+      <!-- Footer -->
+      <footer>
+        <p>Desenvolvido por Gustavo Carvalho</p>
+      </footer>
+    </div>
   </body>
 </html>
