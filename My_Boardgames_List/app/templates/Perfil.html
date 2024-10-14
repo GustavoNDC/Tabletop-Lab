@@ -6,17 +6,15 @@
     <title>Document</title>
   </head>
   <body>
-    <form method="POST" action="/login">
-      <label for="login">Login:</label>
-      <input type="text" id="login" name="login" />
+    {{user}}
 
-      <label for="senha">Senha:</label>
-      <input type="password" id="senha" name="senha" />
-
-      <button type="submit">Log in</button>
-    </form>
     <button onclick="window.location.href='{{url_for('main_routes.index')}}'">
       Pagina Inicial
+    </button>
+    <button
+      onclick="window.location.href='{{ url_for('main_routes.logout') }}'"
+    >
+      Logout
     </button>
   </body>
 </html>

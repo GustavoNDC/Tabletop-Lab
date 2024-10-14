@@ -1,6 +1,206 @@
-<html>
-  <body>
-    <h1>Sobre Nós</h1>
-    <p>Este é um exemplo de uma página sobre nós.</p>
-  </body>
-</html>
+<!--
+I was in seek of a star rating system that used radio inputs for accessibility fallbacks and through some trial and error as well as the very robust solution by James Barnett I was able to 
+
+Exploring many solutions:
+fork of https://codepen.io/jamesbarnett/pen/vlpkh
+http://lea.verou.me/2011/08/accessible-star-rating-widget-with-pure-css/
+http://www.yuiblog.com/blog/2010/08/24/developing-an-accessible-star-ratings-widget/
+https://css-tricks.com/star-ratings/
+-->
+
+<style>
+  /* Base setup */
+  @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+  body {
+    margin: 5%;
+    text-align: center;
+    background: #111;
+    color: #333;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Ratings widget */
+  .rate {
+    display: inline-block;
+    border: 0;
+  }
+
+  /* Hide radio */
+  .rate > input {
+    display: none;
+  }
+
+  /* Order correctly by floating highest to the right */
+  .rate > label {
+    float: right;
+  }
+
+  /* The star of the show */
+  .rate > label:before {
+    display: inline-block;
+    font-size: 2rem;
+    padding: 0.3rem 0.2rem;
+    margin: 0;
+    cursor: pointer;
+    font-family: FontAwesome;
+    content: "\f005 "; /* full star */
+  }
+
+  /* Half star trick */
+  .rate .half:before {
+    content: "\f089 "; /* half star no outline */
+    position: absolute;
+    padding-right: 0;
+  }
+
+  /* Click + hover color */
+  input:checked ~ label, /* color current and previous stars on checked */
+  label:hover, 
+  label:hover ~ label {
+    color: #73b100;
+  } /* color previous stars on hover */
+
+  /* Hover highlights */
+  input:checked + label:hover, 
+  input:checked ~ label:hover, /* highlight current and previous stars */
+  input:checked ~ label:hover ~ label, /* highlight previous selected stars for new rating */
+  label:hover ~ input:checked ~ label {
+    /* highlight previous selected stars */
+    color: #a6e72d;
+  }
+</style>
+
+<section class="table-section">
+  <h2>Tabela de Jogos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th></th>
+        <th>Nome</th>
+        <th>N. Jogadores</th>
+        <th>Categoria</th>
+        <th>Dificuldade</th>
+        <th>Duração</th>
+        <th>Dono</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for jogo in jogos %}
+      <tr>
+        <td class="small-column">{{ jogo.rankInHouse }}</td>
+
+        <td class="game_img">
+          <div class="image-container">
+            <img src="{{ jogo.img }}" class="game-img" />
+          </div>
+        </td>
+
+        <td class="big-column">{{ jogo.nome }}</td>
+        <td class="small-column">
+          {{ jogo.nmJogadorMin }} - {{ jogo.nmJogadorMax }}
+        </td>
+
+        <td class="mid-column">
+          <!-- RANK DE ESTRELAS AQUI -->
+          <form action="/submit_rating" method="POST">
+            <fieldset class="rate">
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="10" />
+              <label for="{{ jogo.id }}" title="5 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="9" />
+              <label
+                class="half"
+                for="{{ jogo.id }}"
+                title="4 1/2 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="8" />
+              <label for="{{ jogo.id }}" title="4 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="7" />
+              <label
+                class="half"
+                for="{{ jogo.id }}"
+                title="3 1/2 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="6" />
+              <label for="{{ jogo.id }}" title="3 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="5" />
+              <label
+                class="half"
+                for="{{ jogo.id }}"
+                title="2 1/2 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="4" />
+              <label for="{{ jogo.id }}" title="2 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="3" />
+              <label
+                class="half"
+                for="{{ jogo.id }}"
+                title="1 1/2 stars"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="2" />
+              <label for="{{ jogo.id }}" title="1 star"></label>
+
+              <input
+                type="radio"
+                id="{{ jogo.id }}"
+                name="rating-{{ jogo.id }}"
+                value="1" />
+              <label class="half" for="{{ jogo.id }}" title="1/2 star"></label>
+            </fieldset>
+          </form>
+          <!-- FIM DE RANK DE ESTRELAS -->
+        </td>
+
+        <td class="small-column">{{ jogo.dificuldade }}/5</td>
+        <td class="small-column">{{ jogo.tempoDeJogo }} Min</td>
+        <td>{{ jogo.dono }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>

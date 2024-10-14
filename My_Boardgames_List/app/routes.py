@@ -14,6 +14,11 @@ main_routes = Blueprint('main_routes', __name__)
 def index():
     # criando as variaveis e recebendo os valores do GET
     query = Jogos.query
+    filterQuery = query
+
+    rank = request.form.get('rating', None)
+    print(rank)
+
     jogadores = request.form.get('jogadores', 0)
     categoria = request.form.get('categoria', None)
     tempo = int(request.form.get('tempo', 9999))
@@ -35,7 +40,6 @@ def index():
         tempo = int(tempo)
     except ValueError:
         tempo = 9999
-
     # checando se houve algum input no filtro e o aplicando
     if jogadores > 0:
         query = query.filter(
@@ -48,7 +52,6 @@ def index():
             Jogos.dono == dono
         )
     if categoria != None:
-        print(categoria)
         query = query.filter(
             Jogos.categoria == categoria
         )
@@ -56,14 +59,14 @@ def index():
     jogos = query.all()
     
     # criando uma lista de categorias unicas dos jogos
-    categList = query.with_entities(Jogos.categoria).all()
+    categList = filterQuery.with_entities(Jogos.categoria).all()
     categList = list(set(categList))
     for index in range(len(categList)):#limpando (' ',) da lista
         itemCategoria = str(categList[index])
         categList[index] = itemCategoria[2:-3:]
     
     # criando uma lista de donos unicos dos jogos
-    donoList = query.with_entities(Jogos.dono).all()
+    donoList = filterQuery.with_entities(Jogos.dono).all()
     donoList = list(set(donoList))
     for index in range(len(donoList)):#limpando (' ',) da lista
         itemDono = str(donoList[index])
@@ -101,24 +104,42 @@ def obg():
 
 @main_routes.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'user' in session:
+        return redirect(url_for('main_routes.perfil'))
+    
     if request.method == 'POST':
         login = request.form.get('login')
         senha = request.form.get('senha')
         
         usuario_existente = Usuario.query.filter_by(login=login).first()
 
+
+        
         if usuario_existente and usuario_existente.check_password(senha):
-            session['user_id'] = usuario_existente.id
+
+
+            session['user'] = usuario_existente.login
             flash('Login efetuado')
-            return redirect(url_for('main_routes.index'))
+            return redirect(url_for('main_routes.perfil'))
             
         else:
-            flash('invalido')
+            print('invalido')
             
             #new_user = Usuario(login=login)
-            #new_user.set_password(senha)  # Define a senha hash
-            #db.session.add(new_user)  # Adiciona o novo usuário à sessão
-            #db.session.commit()  # Salva no banco de dados
+            #new_user.set_password(senha)
+            #db.session.add(new_user)
+            #db.session.commit()
 
     return render_template('login.html')
+
+@main_routes.route('/perfil', methods=['GET', 'POST'])
+def perfil():
+    if 'user' in session:
+        user = session['user']
+        return render_template('Perfil.html', user=user)
+
+@main_routes.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('main_routes.login'))
 
