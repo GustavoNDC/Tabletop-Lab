@@ -16,8 +16,7 @@ def index():
     query = Jogos.query
     filterQuery = query
 
-    rank = request.form.get('rating', None)
-    print(rank)
+    
 
     jogadores = request.form.get('jogadores', 0)
     categoria = request.form.get('categoria', None)
@@ -74,31 +73,39 @@ def index():
 
     # essas listas são usadas para criar todas as categorias no site
     # e receber o valor tambem
-
+    rank = Rank.query
 
     
     return render_template('index.html', jogos=jogos,
                            categList=categList,
-                           donoList=donoList
+                           donoList=donoList,
+                           rank=rank
                            )
 
+
     # Receber Valor da Nota do Usurario
-@main_routes.route('/obg', methods=['GET', 'POST'])
-def obg():
+@main_routes.route('/rate', methods=['GET', 'POST'])
+def rate():
     if request.method == 'POST':
-        id_user = request.form.get('id_user')
-        id_game = request.form.get('id_game')
+        id_user = request.form.get('user_id')
+        id_game = request.form.get('jogo_id')
         nota = request.form.get('nota')
-        
+        print(f"Nota: {nota}, ID Usuário: {id_user}, ID Jogo: {id_game}") 
+
+        print(f"Nota: {nota}, ID Usuário: {id_user}, ID Jogo: {id_game}")  # Para depuração
 
         nota_existente = Rank.query.filter_by(id_user=id_user, id_game=id_game).first()
         if nota_existente:
-            nota_existente.Rank = nota
+            nota_existente.nota = nota  # Corrigido para o nome correto do atributo
             db.session.commit()
+
         else:
             nova_votacao = Rank(id_game=id_game, nota=nota, id_user=id_user)
             db.session.add(nova_votacao)
             db.session.commit()
+        return redirect(url_for('main_routes.index'))
+
+    return redirect(url_for('main_routes.index'))
 
         
 
@@ -118,7 +125,7 @@ def login():
         if usuario_existente and usuario_existente.check_password(senha):
 
 
-            session['user'] = usuario_existente.login
+            session['user'] = usuario_existente.id
             flash('Login efetuado')
             return redirect(url_for('main_routes.perfil'))
             
