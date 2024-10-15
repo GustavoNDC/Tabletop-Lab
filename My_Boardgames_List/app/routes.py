@@ -17,7 +17,11 @@ def index():
     query = Jogos.query
     filterQuery = query
 
-    user = session['user']
+    try:
+        user = session['user']
+    except:
+        KeyError
+        user = 0
 
     
 
@@ -78,12 +82,8 @@ def index():
     # e receber o valor tambem
 
     rank = db.session.query(Rank).filter(Rank.id_user == user).all()
-    print(rank)
     ranks_dict = {r.id_game: r.nota for r in rank}
-    print(ranks_dict)
-    for i in rank:
-        print(i.id_game)
-        print(i.nota)
+
     
     return render_template('index.html', jogos=jogos,
                            categList=categList,
@@ -95,22 +95,28 @@ def index():
     # Receber Valor da Nota do Usurario
 @main_routes.route('/rate', methods=['GET', 'POST'])
 def rate():
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form.get('user_id') != '':
+
         id_user = request.form.get('user_id')
         id_game = request.form.get('jogo_id')
         nota = request.form.get('nota')
         print(f"Nota: {nota}, ID Usuário: {id_user}, ID Jogo: {id_game}") 
-
         nota_existente = Rank.query.filter_by(id_user=id_user, id_game=id_game).first()
+
+        
         if nota_existente:
             nota_existente.nota = nota
             db.session.commit()
 
         else:
+
             nova_votacao = Rank(id_game=id_game, nota=nota, id_user=id_user)
             db.session.add(nova_votacao)
             db.session.commit()
-        return redirect(url_for('main_routes.index'))
+
+    else:
+        return redirect(url_for('main_routes.login'))
+
 
     return redirect(url_for('main_routes.index'))
 
