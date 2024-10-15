@@ -40,3 +40,5 @@ class Rank(db.Model):
     id_user = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     id_game = db.Column(db.Integer, db.ForeignKey('jogos.id'), nullable=False)
     nota = db.Column(db.Integer)
+    def __repr__(self):
+        return f"<Rank(id='{self.id}', id_user='{self.id_user}', id_game='{self.id_game}', nota='{self.nota}')>"

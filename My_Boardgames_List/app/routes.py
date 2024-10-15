@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
 from app.models import Usuario, Jogos, Rank
 from app import db
+from sqlalchemy.orm import sessionmaker
 
 
 def is_logged_in():
@@ -15,6 +16,8 @@ def index():
     # criando as variaveis e recebendo os valores do GET
     query = Jogos.query
     filterQuery = query
+
+    user = session['user']
 
     
 
@@ -73,13 +76,19 @@ def index():
 
     # essas listas são usadas para criar todas as categorias no site
     # e receber o valor tambem
-    rank = Rank.query
 
+    rank = db.session.query(Rank).filter(Rank.id_user == user).all()
+    print(rank)
+    ranks_dict = {r.id_game: r.nota for r in rank}
+    print(ranks_dict)
+    for i in rank:
+        print(i.id_game)
+        print(i.nota)
     
     return render_template('index.html', jogos=jogos,
                            categList=categList,
                            donoList=donoList,
-                           rank=rank
+                           ranks=ranks_dict
                            )
 
 
@@ -92,11 +101,9 @@ def rate():
         nota = request.form.get('nota')
         print(f"Nota: {nota}, ID Usuário: {id_user}, ID Jogo: {id_game}") 
 
-        print(f"Nota: {nota}, ID Usuário: {id_user}, ID Jogo: {id_game}")  # Para depuração
-
         nota_existente = Rank.query.filter_by(id_user=id_user, id_game=id_game).first()
         if nota_existente:
-            nota_existente.nota = nota  # Corrigido para o nome correto do atributo
+            nota_existente.nota = nota
             db.session.commit()
 
         else:
