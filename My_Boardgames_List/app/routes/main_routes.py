@@ -177,6 +177,6 @@ def logout():
 def gerar_notas():
 
     botão_da_loucura()
-
+    calcular_ranking()
     return redirect(url_for('main_routes.index'))
 
