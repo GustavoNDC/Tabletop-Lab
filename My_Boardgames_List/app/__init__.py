@@ -5,7 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 def create_app():
-    # Inicializa o Flask
     app = Flask(__name__)
 
     # Carrega as configurações do app
@@ -16,6 +15,8 @@ def create_app():
 
     # Importa e registra as rotas
     from app.routes.main_routes import main_routes
+    from app.routes.graph_routes import graph_routes
     app.register_blueprint(main_routes)
+    app.register_blueprint(graph_routes)
 
     return app

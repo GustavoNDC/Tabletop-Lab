@@ -60,3 +60,4 @@ class Ranking(db.Model):
     def __repr__(self):
         return f"<Ranking id_jogo={self.id_jogo} media_nota={self.media_nota}>"
 
+

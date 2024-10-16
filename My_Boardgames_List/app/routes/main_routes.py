@@ -95,7 +95,6 @@ def index():
                            categList=categList,
                            donoList=donoList,
                            notas=notas_dict
-                           
                            )
 
 
