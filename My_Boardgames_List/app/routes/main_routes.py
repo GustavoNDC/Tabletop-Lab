@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from app.models import Usuario, Jogos, Notas
-from app.func import calcular_ranking, botão_da_loucura
+from app.utils.ranking_helpers import calcular_ranking, botão_da_loucura
 from app import db
 #from sqlalchemy.orm import sessionmaker
 
