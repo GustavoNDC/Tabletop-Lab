@@ -15,7 +15,7 @@ def create_app():
     db.init_app(app)
 
     # Importa e registra as rotas
-    from app.routes import main_routes
+    from app.routes.main_routes import main_routes
     app.register_blueprint(main_routes)
 
     return app

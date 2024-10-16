@@ -171,7 +171,12 @@ def perfil():
 def logout():
     session.pop('user', None)
     return redirect(url_for('main_routes.login'))
+
 #apenas para testes
 @main_routes.route('/gerar_notas')
 def gerar_notas():
+
     botão_da_loucura()
+
+    return redirect(url_for('main_routes.index'))
+

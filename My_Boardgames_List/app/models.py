@@ -21,7 +21,7 @@ class Jogos(db.Model):
     __tablename__ = 'jogos'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     rank = db.Column(db.Integer, unique=True)
-    rankInHouse = db.Column(db.Integer, unique=True)
+    rankInHouse = db.Column(db.Integer)
     nome = db.Column(db.String(80))
     nmJogadorMin = db.Column(db.Integer)
     nmJogadorMax = db.Column(db.Integer)
@@ -34,11 +34,29 @@ class Jogos(db.Model):
     def __repr__(self):
         return f'<Jogos {self.nome}>'
 
-class Rank(db.Model):
-    __tablename__ = 'rank'
+class Notas(db.Model):
+    __tablename__ = 'notas'
     id = db.Column(db.Integer, primary_key=True, unique=True)
     id_user = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
     id_game = db.Column(db.Integer, db.ForeignKey('jogos.id'), nullable=False)
     nota = db.Column(db.Integer)
     def __repr__(self):
-        return f"<Rank(id='{self.id}', id_user='{self.id_user}', id_game='{self.id_game}', nota='{self.nota}')>"
+        return f"<Notas(id='{self.id}', id_user='{self.id_user}', id_game='{self.id_game}', nota='{self.nota}')>"
+
+class Generos(db.Model):
+    __tablename__ = 'generos'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
+
+class JogoGenero(db.Model):
+    __tablename__ = 'jogos_generos'
+    id_jogo = db.Column(db.Integer, db.ForeignKey('jogos.id'), primary_key=True)
+    id_genero = db.Column(db.Integer, db.ForeignKey('generos.id'), primary_key=True)
+
+class Ranking(db.Model):
+    __tablename__='ranking'
+    id_jogo = db.Column(db.Integer, primary_key=True)
+    media_nota = db.Column(db.Numeric(3, 2))
+    def __repr__(self):
+        return f"<Ranking id_jogo={self.id_jogo} media_nota={self.media_nota}>"
+
