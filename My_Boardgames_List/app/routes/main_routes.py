@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, session, flash
-from app.models import Usuario, Jogos, Rank
+from app.models import Usuario, Jogos, Notas
+from app.func import calcular_ranking, botão_da_loucura
 from app import db
-from sqlalchemy.orm import sessionmaker
+#from sqlalchemy.orm import sessionmaker
 
 
 def is_logged_in():
@@ -62,7 +63,7 @@ def index():
             Jogos.categoria == categoria
         )
     
-    jogos = query.all()
+    jogos = query.order_by(Jogos.rankInHouse).all()
     
     # criando uma lista de categorias unicas dos jogos
     categList = filterQuery.with_entities(Jogos.categoria).all()
@@ -81,14 +82,20 @@ def index():
     # essas listas são usadas para criar todas as categorias no site
     # e receber o valor tambem
 
-    rank = db.session.query(Rank).filter(Rank.id_user == user).all()
-    ranks_dict = {r.id_game: r.nota for r in rank}
+    #############################
+    nota = db.session.query(Notas).filter(Notas.id_user == user).all()
+    notas_dict = {r.id_game: r.nota for r in nota}
+    #############################
+
+    
+
 
     
     return render_template('index.html', jogos=jogos,
                            categList=categList,
                            donoList=donoList,
-                           ranks=ranks_dict
+                           notas=notas_dict
+                           
                            )
 
 
@@ -101,18 +108,20 @@ def rate():
         id_game = request.form.get('jogo_id')
         nota = request.form.get('nota')
         print(f"Nota: {nota}, ID Usuário: {id_user}, ID Jogo: {id_game}") 
-        nota_existente = Rank.query.filter_by(id_user=id_user, id_game=id_game).first()
+        nota_existente = Notas.query.filter_by(id_user=id_user, id_game=id_game).first()
 
         
         if nota_existente:
             nota_existente.nota = nota
             db.session.commit()
+            calcular_ranking()
 
         else:
 
-            nova_votacao = Rank(id_game=id_game, nota=nota, id_user=id_user)
+            nova_votacao = Notas(id_game=id_game, nota=nota, id_user=id_user)
             db.session.add(nova_votacao)
             db.session.commit()
+            calcular_ranking()
 
     else:
         return redirect(url_for('main_routes.login'))
@@ -162,4 +171,7 @@ def perfil():
 def logout():
     session.pop('user', None)
     return redirect(url_for('main_routes.login'))
-
+#apenas para testes
+@main_routes.route('/gerar_notas')
+def gerar_notas():
+    botão_da_loucura()
